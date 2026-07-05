@@ -7,10 +7,5 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    volumes:
-      - ./server/src:/app/server/src
-      - ./server/config.js:/app/server/config.js
-      - ./package.json:/app/package.json
-      - ./package-lock.json:/app/package-lock.json
     command: npm start
     restart: unless-stopped
