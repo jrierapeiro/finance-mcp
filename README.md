@@ -31,6 +31,53 @@ docker-compose up
 
 The server implements the MCP protocol and can be used with MCP-compatible clients that support the `fetchMarketData` tool.
 
+### Example Query
+
+Example of how to query the server for Apple (AAPL) stock data using an MCP client:
+
+```json
+{
+  "method": "tools/call",
+  "params": {
+    "name": "fetchMarketData",
+    "arguments": {
+      "ticker": "AAPL"
+    }
+  }
+}
+```
+
+### Example Response
+
+This query would return market data in the following format:
+```json
+{
+  "success": true,
+  "data": {
+    "current_price": 172.35,
+    "day_change_pct": 0.84,
+    "52w_high": 198.23,
+    "52w_low": 124.17,
+    "pe_ratio": 28.5,
+    "market_cap": 2700000000000,
+    "dividend_yield_pct": 0.55,
+    "currency": "USD",
+    "news_headlines": [
+      "Apple Report Shows Strong Growth in Services Segment",
+      "AAPL Earnings Beat Estimates as iPhone Sales Surpass Expectations"
+    ],
+    "news": [
+      {
+        "title": "Apple Report Shows Strong Growth in Services Segment",
+        "publisher": "Financial Times",
+        "link": "https://example.com/news1",
+        "time": "2023-06-15T10:30:00Z"
+      }
+    ]
+  }
+}
+```
+
 ## Configuration
 
 Edit `server/config.js` to add more ticker mappings or modify settings.
