@@ -3,7 +3,7 @@
 // Import necessary modules
 import { createMcpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createStdioServerTransport, createHttpServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { fetchMarketData } from '../../yfinance.js';
+import { fetchMarketData } from './yfinance.js';
 
 async function main() {
   // Create an MCP server instance

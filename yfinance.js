@@ -1,5 +1,5 @@
 import YahooFinance from 'yahoo-finance2';
-import cfg from '../config.js';
+import cfg from './config.js';
 
 const yf = new YahooFinance({
   queue: { concurrency: 2, interval: 500 },
