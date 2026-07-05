@@ -81,3 +81,15 @@ This query would return market data in the following format:
 ## Configuration
 
 Edit `server/config.js` to add more ticker mappings or modify settings.
+
+## Testing
+
+This project now includes comprehensive test coverage using vitest:
+
+### Running Tests
+- `npm test` - Run all tests once
+- `npm run test:watch` - Run tests in watch mode for development
+
+### Test Structure
+- Unit tests for yfinance module in `test/yfinance.test.js`
+- Integration tests for MCP server functionality in `test/integration.test.js`
