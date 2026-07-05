@@ -1,8 +1,8 @@
 import YahooFinance from 'yahoo-finance2';
-import cfg from './config.js';
+import cfg from './server/config.js';
 
 const yf = new YahooFinance({
-  queue: { concurrency: 2, interval: 500 },
+  queue: { concurrency: 5, interval: 100 }, // Increased concurrency for batch requests
   suppressNotices: ['yahooSurvey'],
 });
 
@@ -61,4 +61,17 @@ export async function fetchMarketData(ticker) {
     console.warn(`[yfinance] Error for ${ticker}: ${e.message}`);
     return {};
   }
+}
+
+// Batch fetch function
+export async function fetchMultipleMarketData(tickers) {
+  // Use Promise.allSettled to handle failed requests gracefully
+  const promises = tickers.map(ticker => fetchMarketData(ticker));
+  const results = await Promise.allSettled(promises);
+  
+  return results.map((result, index) => ({
+    ticker: tickers[index],
+    data: result.status === 'fulfilled' ? result.value : null,
+    error: result.status === 'rejected' ? result.reason.message : null
+  }));
 }
