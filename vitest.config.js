@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    environment: 'happy-dom',
+    environment: 'node',
     setupFiles: ['./test/setup.js'],
     globals: true,
   },
