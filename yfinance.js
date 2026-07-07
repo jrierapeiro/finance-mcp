@@ -63,6 +63,50 @@ export async function fetchMarketData(ticker) {
   }
 }
 
+export async function searchStocks(query) {
+  try {
+    const searchResult = await yf.search(query, { count: 20 });
+    
+    // Process search results into standardized format
+    if (!searchResult?.quotes?.length) {
+      return [];
+    }
+
+    // Filter out irrelevant or duplicate results (filtering on market cap and asset type)
+    const filteredQuotes = searchResult.quotes
+      .filter(quote => {
+        // Only include stocks and ETFs (not indices, mutual funds, etc.)
+        if (!quote?.symbol) return false;
+        
+        // Exclude quotes without proper market data
+        if (quote.marketCap && quote.marketCap < 1000000) return false; // Skip small companies
+        
+        return true;
+      })
+      .map(quote => ({
+        ticker: quote.symbol,
+        name: quote.longName || quote.shortName,
+        exchange: quote.exchange,
+        type: quote.quoteType,
+        market_cap: quote.marketCap,
+        price: quote.regularMarketPrice
+      }));
+
+    // Remove duplicates by symbol (keeping first occurrence)
+    const seen = new Set();
+    return filteredQuotes.filter(item => {
+      if (seen.has(item.ticker)) {
+        return false;
+      }
+      seen.add(item.ticker);
+      return true;
+    });
+  } catch (e) {
+    console.warn(`[yfinance] Search error for query "${query}": ${e.message}`);
+    return [];
+  }
+}
+
 // Batch fetch function
 export async function fetchMultipleMarketData(tickers) {
   // Use Promise.allSettled to handle failed requests gracefully
