@@ -65,7 +65,7 @@ export async function fetchMarketData(ticker) {
 
 export async function searchStocks(query) {
   try {
-    const searchResult = await yf.search(query, { count: 20 });
+    const searchResult = await yf.search(query, { quotesCount: 20 });
     
     // Process search results into standardized format
     if (!searchResult?.quotes?.length) {

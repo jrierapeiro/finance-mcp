@@ -254,3 +254,48 @@ To run the MCP server locally and test tools:
    ```
 
 3. The server will be accessible through MCP client implementations.
+
+## Testing Tools Locally
+
+This server uses **stdio transport** (JSON-RPC over stdin/stdout), not HTTP. Below are ways to test the tools directly.
+
+### Using MCP Inspector (Web UI)
+
+The official MCP Inspector provides a web interface to test all tools:
+
+```bash
+npx @modelcontextprotocol/inspector node server/src/index.js
+```
+
+Then open the provided URL (usually `http://localhost:5173`) in your browser.
+
+### Using JSON-RPC over stdin/stdout
+
+Pipe JSON-RPC messages directly to the server process:
+
+**List available tools:**
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | node server/src/index.js
+```
+
+**Call fetchMarketData:**
+```bash
+echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"fetchMarketData","arguments":{"ticker":"AAPL"}}}' | node server/src/index.js
+```
+
+**Call fetchMultipleMarketData:**
+```bash
+echo '{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"fetchMultipleMarketData","arguments":{"tickers":["AAPL","MSFT","GOOGL"]}}}' | node server/src/index.js
+```
+
+**Call searchStocks:**
+```bash
+echo '{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"searchStocks","arguments":{"query":"Apple"}}}' | node server/src/index.js
+```
+
+**Call getMarketOverview:**
+```bash
+echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"getMarketOverview","arguments":{}}}' | node server/src/index.js
+```
+
+> **Note:** The server outputs a JSON-RPC response per request. The first response will include initialization data (protocol version, server capabilities), and subsequent responses will contain the tool results. Use `jq` to pretty-print: `echo '...' | node server/src/index.js | jq .`
