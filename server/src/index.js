@@ -3,7 +3,7 @@
 // Import necessary modules
 import { createMcpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createStdioServerTransport, createHttpServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { fetchMarketData, fetchMultipleMarketData, searchStocks } from '../../yfinance.js';
+import { fetchMarketData, fetchMultipleMarketData, searchStocks, getMarketOverview } from '../../yfinance.js';
 
 async function main() {
   // Create an MCP server instance
@@ -20,6 +20,10 @@ async function main() {
           {
             name: "searchStocks",
             description: "Search for stocks by name or symbol"
+          },
+          {
+            name: "getMarketOverview",
+            description: "Fetch market overview for major indices"
           }
         ]
       }
@@ -101,6 +105,36 @@ async function main() {
   }, async ({ query }) => {
     try {
       const results = await searchStocks(query);
+      return { 
+        success: true,
+        data: results
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  });
+
+  // Register getMarketOverview tool function
+  mcpServer.registerTool("getMarketOverview", {
+    description: "Fetch market overview for major indices",
+    inputSchema: {
+      type: "object",
+      properties: {
+        indices: {
+          type: "array",
+          items: {
+            type: "string"
+          },
+          description: "Optional list of indices to fetch (defaults to ['SP500', 'DJI', 'IXIC'])"
+        }
+      }
+    }
+  }, async ({ indices }) => {
+    try {
+      const results = await getMarketOverview(indices);
       return { 
         success: true,
         data: results

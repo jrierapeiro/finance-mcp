@@ -107,6 +107,52 @@ export async function searchStocks(query) {
   }
 }
 
+// Fetch index data
+export async function getMarketOverview() {
+  // Define major market indices to fetch
+  const indices = ['SP500', 'DJI', 'IXIC'];
+  
+  try {
+    const promises = indices.map(async (index) => {
+      try {
+        // Use standard stock ticker for market indices (yahoo-finance2)
+        // SP500 is "^GSPC", DJI is "^DJI", IXIC is "^IXIC"
+        const symbol = index === 'SP500' ? '^GSPC' : 
+                      index === 'DJI' ? '^DJI' : '^IXIC';
+                      
+        const quote = await yf.quote(symbol);
+        if (quote && quote.regularMarketPrice && quote.regularMarketPreviousClose) {
+          const currentPrice = quote.regularMarketPrice;
+          const prevClose = quote.regularMarketPreviousClose;
+          const change = currentPrice - prevClose;
+          const changePct = ((change / prevClose) * 100).toFixed(2);
+          
+          return {
+            index: index,
+            current_value: currentPrice,
+            change_amount: change,
+            change_percentage: parseFloat(changePct)
+          };
+        }
+      } catch (e) {
+        console.warn(`[yfinance] Failed to fetch data for index ${index}: ${e.message}`);
+        // Return null for failed index
+        return null;
+      }
+    });
+    
+    const results = await Promise.allSettled(promises);
+    
+    // Filter out failed results and return valid data
+    return results
+      .filter(result => result.status === 'fulfilled' && result.value !== null)
+      .map(result => result.value);
+  } catch (e) {
+    console.warn(`[yfinance] Failed to fetch market overview: ${e.message}`);
+    return [];
+  }
+}
+
 // Batch fetch function
 export async function fetchMultipleMarketData(tickers) {
   // Use Promise.allSettled to handle failed requests gracefully
