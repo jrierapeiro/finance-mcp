@@ -296,6 +296,31 @@ echo '{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"getMarketO
 
 > **Note:** The server outputs a JSON-RPC response per request. The first response will include initialization data (protocol version, server capabilities), and subsequent responses will contain the tool results. Use `jq` to pretty-print: `echo '...' | node server/src/index.js | jq .`
 
+## Integrating with Odysseus
+
+This server can be added to [Odysseus](https://github.com/pewdiepie-archdaemon/odysseus) as a custom MCP server (admin access required).
+
+### Via Settings UI
+
+Go to **Settings → MCP management** and add a new server:
+
+| Field | Value |
+|-------|-------|
+| Name | `Finance MCP` |
+| Transport | `stdio` |
+| Command | `node` |
+| Args | `["/full/path/to/finance-mcp/server/src/index.js"]` |
+
+### Via API
+
+```bash
+curl -X POST http://your-odysseus-host/api/mcp/servers \
+  -d 'name=Finance+MCP' \
+  -d 'transport=stdio' \
+  -d 'command=node' \
+  -d 'args=["/full/path/to/finance-mcp/server/src/index.js"]'
+```
+
 ## Changelog
 
 Improvements made by AI code review (big-pickle):
