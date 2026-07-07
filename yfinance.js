@@ -17,6 +17,7 @@ export async function fetchMarketData(ticker) {
     const info = quote || {};
 
     const currentPrice = info.regularMarketPrice || info.regularMarketPreviousClose;
+    if (currentPrice == null) return null;
     const prevClose = info.regularMarketPreviousClose;
     let dayChangePct = null;
     if (currentPrice && prevClose && prevClose !== 0) {
