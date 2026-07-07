@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { fetchMarketData } from '../yfinance.js';
-import * as z from 'zod/v4';
+import { z } from 'zod';
 
 describe('Integration Tests', () => {
   it('should create MCP server successfully', () => {
