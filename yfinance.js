@@ -107,43 +107,43 @@ export async function searchStocks(query) {
   }
 }
 
-// Fetch index data
-export async function getMarketOverview() {
-  // Define major market indices to fetch
-  const indices = ['SP500', 'DJI', 'IXIC'];
-  
+const INDEX_MAP = {
+  'SP500': '^GSPC',
+  'DJI': '^DJI',
+  'IXIC': '^IXIC',
+};
+const DEFAULT_INDICES = ['SP500', 'DJI', 'IXIC'];
+
+export async function getMarketOverview(indices) {
+  const inputs = (indices && indices.length > 0) ? indices : DEFAULT_INDICES;
+
   try {
-    const promises = indices.map(async (index) => {
+    const promises = inputs.map(async (input) => {
       try {
-        // Use standard stock ticker for market indices (yahoo-finance2)
-        // SP500 is "^GSPC", DJI is "^DJI", IXIC is "^IXIC"
-        const symbol = index === 'SP500' ? '^GSPC' : 
-                      index === 'DJI' ? '^DJI' : '^IXIC';
-                      
+        const symbol = INDEX_MAP[input] || input;
+
         const quote = await yf.quote(symbol);
         if (quote && quote.regularMarketPrice && quote.regularMarketPreviousClose) {
           const currentPrice = quote.regularMarketPrice;
           const prevClose = quote.regularMarketPreviousClose;
           const change = currentPrice - prevClose;
           const changePct = ((change / prevClose) * 100).toFixed(2);
-          
+
           return {
-            index: index,
+            index: input,
             current_value: currentPrice,
             change_amount: change,
-            change_percentage: parseFloat(changePct)
+            change_percentage: parseFloat(changePct),
           };
         }
       } catch (e) {
-        console.warn(`[yfinance] Failed to fetch data for index ${index}: ${e.message}`);
-        // Return null for failed index
+        console.warn(`[yfinance] Failed to fetch data for ${input}: ${e.message}`);
         return null;
       }
     });
-    
+
     const results = await Promise.allSettled(promises);
-    
-    // Filter out failed results and return valid data
+
     return results
       .filter(result => result.status === 'fulfilled' && result.value !== null)
       .map(result => result.value);
