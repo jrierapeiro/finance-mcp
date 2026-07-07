@@ -9,4 +9,4 @@ Implement the search method from yahoo-finance2, process search results into sta
 - Filter out irrelevant or duplicate results
 
 ## Completed
-No
+Yes

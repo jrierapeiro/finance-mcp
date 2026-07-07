@@ -9,4 +9,4 @@ Register `getMarketOverview` in server/src/index.js, define input schema with op
 - Implement structured response format
 
 ## Completed
-No
+Yes
