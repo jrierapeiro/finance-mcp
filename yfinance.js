@@ -59,7 +59,7 @@ export async function fetchMarketData(ticker) {
     };
   } catch (e) {
     console.warn(`[yfinance] Error for ${ticker}: ${e.message}`);
-    return {};
+    return null;
   }
 }
 
