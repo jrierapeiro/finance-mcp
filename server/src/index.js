@@ -3,7 +3,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { fetchMarketData, fetchMultipleMarketData, searchStocks, getMarketOverview } from '../../yfinance.js';
+import { fetchMarketData, fetchMultipleMarketData, searchStocks, getMarketOverview, getCompanyInfo } from '../../yfinance.js';
 
 async function main() {
   const mcpServer = new McpServer({
@@ -75,6 +75,24 @@ async function main() {
       const results = await getMarketOverview(indices);
       return {
         content: [{ type: "text", text: JSON.stringify(results) }]
+      };
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error: ${error.message}` }]
+      };
+    }
+  });
+
+  mcpServer.registerTool("getCompanyInfo", {
+    description: "Fetch detailed company information including profile, officers, and financial metrics",
+    inputSchema: z.object({
+      ticker: z.string().describe("Stock ticker symbol (e.g. AAPL, MSFT)")
+    })
+  }, async ({ ticker }) => {
+    try {
+      const result = await getCompanyInfo(ticker);
+      return {
+        content: [{ type: "text", text: JSON.stringify(result) }]
       };
     } catch (error) {
       return {

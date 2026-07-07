@@ -9,4 +9,4 @@ Extract company business details from Yahoo Finance, include key executives, sec
 - Process company profile data into standardized format
 
 ## Completed
-No
+Yes

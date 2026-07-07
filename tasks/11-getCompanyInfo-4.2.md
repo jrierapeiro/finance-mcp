@@ -9,4 +9,4 @@ Register `getCompanyInfo` in server/src/index.js, define input schema with ticke
 - Implement structured response format
 
 ## Completed
-No
+Yes

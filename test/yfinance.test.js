@@ -2,15 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mockQuote = vi.fn();
 const mockSearch = vi.fn();
+const mockQuoteSummary = vi.fn();
 
 vi.mock('yahoo-finance2', () => ({
   default: vi.fn().mockImplementation(function () {
-    return { quote: mockQuote, search: mockSearch };
+    return { quote: mockQuote, search: mockSearch, quoteSummary: mockQuoteSummary };
   }),
 }));
 
 const yfinanceModule = await import('../yfinance.js');
-const { fetchMarketData, fetchMultipleMarketData, searchStocks, getMarketOverview } = yfinanceModule;
+const {
+  fetchMarketData, fetchMultipleMarketData, searchStocks,
+  getMarketOverview, getCompanyInfo,
+} = yfinanceModule;
 
 function makeQuote(overrides = {}) {
   return {
@@ -257,5 +261,91 @@ describe('getMarketOverview', () => {
     const results = await getMarketOverview(['SP500', 'BROKEN']);
     expect(results).toHaveLength(1);
     expect(results[0].index).toBe('SP500');
+  });
+});
+
+describe('getCompanyInfo', () => {
+  it('should be a function', () => {
+    expect(typeof getCompanyInfo).toBe('function');
+  });
+
+  it('should return structured company info for a valid ticker', async () => {
+    mockQuoteSummary.mockResolvedValue({
+      assetProfile: {
+        name: 'Apple Inc.',
+        sector: 'Technology',
+        industry: 'Consumer Electronics',
+        longBusinessSummary: 'Apple designs, manufactures, and markets smartphones.',
+        website: 'https://apple.com',
+        country: 'United States',
+        fullTimeEmployees: 164000,
+        companyOfficers: [
+          { name: 'Tim Cook', title: 'CEO', age: 63, totalPay: 15000000 },
+        ],
+      },
+      financialData: {
+        marketCap: 2700000000000,
+        currentPE: 28.5,
+        trailingPE: 27.8,
+        pegRatio: 2.1,
+        profitMargins: 0.25,
+        totalRevenue: 395000000000,
+        revenueGrowth: 0.08,
+        earningsPerShare: { raw: 6.44 },
+        dividendYield: 0.0055,
+        dividendRate: 0.96,
+        payoutRatio: 0.15,
+        fiftyTwoWeekHigh: 198.23,
+        fiftyTwoWeekLow: 124.17,
+        priceToBook: 45.0,
+        debtToEquity: 150.0,
+        returnOnEquity: 1.5,
+      },
+      defaultKeyStatistics: {
+        enterpriseValue: 2750000000000,
+        forwardPE: 30.1,
+        beta: 1.2,
+      },
+    });
+
+    const result = await getCompanyInfo('AAPL');
+    expect(result).not.toBeNull();
+    expect(result.ticker).toBe('AAPL');
+    expect(result.name).toBe('Apple Inc.');
+    expect(result.sector).toBe('Technology');
+    expect(result.industry).toBe('Consumer Electronics');
+    expect(result.description).toContain('smartphones');
+    expect(result.website).toBe('https://apple.com');
+    expect(result.employees).toBe(164000);
+    expect(result.market_cap).toBe(2700000000000);
+    expect(result.pe_ratio).toBe(28.5);
+    expect(result.forward_pe).toBe(30.1);
+    expect(result.beta).toBe(1.2);
+    expect(result.revenue).toBe(395000000000);
+    expect(result.earnings_per_share).toBe(6.44);
+    expect(result.dividend_yield).toBe(0.0055);
+    expect(result.officers).toHaveLength(1);
+    expect(result.officers[0].name).toBe('Tim Cook');
+    expect(result.officers[0].title).toBe('CEO');
+  });
+
+  it('should return null on api error', async () => {
+    mockQuoteSummary.mockRejectedValue(new Error('API failure'));
+
+    const result = await getCompanyInfo('ERROR');
+    expect(result).toBeNull();
+  });
+
+  it('should handle missing optional fields gracefully', async () => {
+    mockQuoteSummary.mockResolvedValue({
+      assetProfile: {},
+      financialData: {},
+      defaultKeyStatistics: {},
+    });
+
+    const result = await getCompanyInfo('MINIMAL');
+    expect(result).not.toBeNull();
+    expect(result.name).toBeNull();
+    expect(result.officers).toEqual([]);
   });
 });

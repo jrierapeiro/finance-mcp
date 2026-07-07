@@ -154,7 +154,57 @@ export async function getMarketOverview(indices) {
   }
 }
 
-// Batch fetch function
+export async function getCompanyInfo(ticker) {
+  try {
+    const symbol = resolveSymbol(ticker);
+    const result = await yf.quoteSummary(symbol, {
+      modules: ['assetProfile', 'financialData', 'defaultKeyStatistics'],
+    });
+
+    const profile = result.assetProfile || {};
+    const financials = result.financialData || {};
+    const stats = result.defaultKeyStatistics || {};
+
+    return {
+      ticker: ticker.toUpperCase(),
+      name: profile.name || null,
+      sector: profile.sector || null,
+      industry: profile.industry || null,
+      description: profile.longBusinessSummary || null,
+      website: profile.website || null,
+      country: profile.country || null,
+      employees: profile.fullTimeEmployees || null,
+      market_cap: financials.marketCap || null,
+      enterprise_value: stats.enterpriseValue || null,
+      pe_ratio: financials.currentPE || financials.trailingPE || null,
+      forward_pe: stats.forwardPE || null,
+      peg_ratio: financials.pegRatio || null,
+      beta: stats.beta || null,
+      profit_margins: financials.profitMargins || null,
+      revenue: financials.totalRevenue || null,
+      revenue_growth: financials.revenueGrowth || null,
+      earnings_per_share: financials.earningsPerShare?.raw || null,
+      dividend_yield: financials.dividendYield || null,
+      dividend_rate: financials.dividendRate || null,
+      payout_ratio: financials.payoutRatio || null,
+      fifty_two_week_high: financials.fiftyTwoWeekHigh || null,
+      fifty_two_week_low: financials.fiftyTwoWeekLow || null,
+      price_to_book: financials.priceToBook || null,
+      debt_to_equity: financials.debtToEquity || null,
+      return_on_equity: financials.returnOnEquity || null,
+      officers: (profile.companyOfficers || []).map(o => ({
+        name: o.name,
+        title: o.title,
+        age: o.age || null,
+        totalPay: o.totalPay || null,
+      })),
+    };
+  } catch (e) {
+    console.warn(`[yfinance] Error fetching company info for ${ticker}: ${e.message}`);
+    return null;
+  }
+}
+
 export async function fetchMultipleMarketData(tickers) {
   // Use Promise.allSettled to handle failed requests gracefully
   const promises = tickers.map(ticker => fetchMarketData(ticker));
