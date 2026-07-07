@@ -78,10 +78,6 @@ This query would return market data in the following format:
 }
 ```
 
-## Configuration
-
-Edit `server/config.js` to add more ticker mappings or modify settings.
-
 ## Testing
 
 This project now includes comprehensive test coverage using vitest:
@@ -307,7 +303,7 @@ Improvements made by AI code review (big-pickle):
 - **`getMarketOverview` now accepts custom indices** — The MCP tool's optional `indices` parameter is now wired through to the underlying function. Supports short names (`SP500`, `DJI`, `IXIC`) and direct Yahoo symbols (`^GSPC`, `^DJI`, `^IXIC`).
 - **Added `getCompanyInfo` tool** — New Phase 4 tool returning company profile, officers, financial metrics, and valuation data via `quoteSummary`.
 - **Fixed `searchStocks` options** — Changed invalid `{ count: 20 }` to valid `{ quotesCount: 20 }` matching the library's `SearchOptions` interface.
-- **Removed dead code** — Deleted orphaned prototypes (`simple-server.js`, `yfinance-mcp-server.js`, `index.js`), artifact `server/node_modules/` and `server/package-lock.json`, and unused `express` dependency.
+- **Removed dead code** — Deleted orphaned prototypes (`simple-server.js`, `yfinance-mcp-server.js`, `index.js`), artifact `server/node_modules/` and `server/package-lock.json`, unused `express` dependency, and no-op `server/config.js`.
 - **Rewrote tests with mocking** — 29 unit tests now mock `yahoo-finance2` so they're fast and reliable (no network calls). Covers all four data functions plus `getCompanyInfo`.
 - **Switched test environment** — Changed from `happy-dom` to `node` in vitest config (server project, not a browser/DOM project).
 - **Committed `package-lock.json`** — Removed from `.gitignore` so installs are reproducible.

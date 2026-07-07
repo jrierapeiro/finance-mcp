@@ -1,19 +1,13 @@
 import YahooFinance from 'yahoo-finance2';
-import cfg from './server/config.js';
 
 const yf = new YahooFinance({
-  queue: { concurrency: 5, interval: 100 }, // Increased concurrency for batch requests
+  queue: { concurrency: 5, interval: 100 },
   suppressNotices: ['yahooSurvey'],
 });
 
-function resolveSymbol(ticker) {
-  return cfg.tickerMap[ticker.toUpperCase()] || ticker;
-}
-
 export async function fetchMarketData(ticker) {
   try {
-    const symbol = resolveSymbol(ticker);
-    const quote = await yf.quote(symbol);
+    const quote = await yf.quote(ticker);
     const info = quote || {};
 
     const currentPrice = info.regularMarketPrice || info.regularMarketPreviousClose;
@@ -156,8 +150,7 @@ export async function getMarketOverview(indices) {
 
 export async function getCompanyInfo(ticker) {
   try {
-    const symbol = resolveSymbol(ticker);
-    const result = await yf.quoteSummary(symbol, {
+    const result = await yf.quoteSummary(ticker, {
       modules: ['assetProfile', 'financialData', 'defaultKeyStatistics'],
     });
 
