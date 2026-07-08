@@ -333,3 +333,4 @@ Improvements made by AI code review (big-pickle):
 - **Switched test environment** — Changed from `happy-dom` to `node` in vitest config (server project, not a browser/DOM project).
 - **Committed `package-lock.json`** — Removed from `.gitignore` so installs are reproducible.
 - **Updated task tracking** — All 12 task files now reflect actual completion status. Development plan annotated with checkmarks.
+- **Improved MCP response format for LLM agents** — Switched from flat `JSON.stringify(result)` to pretty-printed `JSON.stringify(result, null, 2)` and added `isError: true` on error responses, making tool outputs easier for agent frameworks like Odysseus to parse.

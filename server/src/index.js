@@ -20,11 +20,12 @@ async function main() {
     try {
       const result = await fetchMarketData(ticker);
       return {
-        content: [{ type: "text", text: JSON.stringify(result) }]
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error: ${error.message}` }]
+        content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true
       };
     }
   });
@@ -38,11 +39,12 @@ async function main() {
     try {
       const results = await fetchMultipleMarketData(tickers);
       return {
-        content: [{ type: "text", text: JSON.stringify(results) }]
+        content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error: ${error.message}` }]
+        content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true
       };
     }
   });
@@ -56,11 +58,12 @@ async function main() {
     try {
       const results = await searchStocks(query);
       return {
-        content: [{ type: "text", text: JSON.stringify(results) }]
+        content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error: ${error.message}` }]
+        content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true
       };
     }
   });
@@ -74,11 +77,12 @@ async function main() {
     try {
       const results = await getMarketOverview(indices);
       return {
-        content: [{ type: "text", text: JSON.stringify(results) }]
+        content: [{ type: "text", text: JSON.stringify(results, null, 2) }]
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error: ${error.message}` }]
+        content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true
       };
     }
   });
@@ -92,11 +96,12 @@ async function main() {
     try {
       const result = await getCompanyInfo(ticker);
       return {
-        content: [{ type: "text", text: JSON.stringify(result) }]
+        content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error: ${error.message}` }]
+        content: [{ type: "text", text: `Error: ${error.message}` }],
+        isError: true
       };
     }
   });
